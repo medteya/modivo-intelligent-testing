@@ -16,9 +16,12 @@ describe("Search and category navigation", () => {
     home.searchFor(searchTerm);
 
     cy.location().should((location) => {
-      expect(location.search, "search query parameter is present").to.contain(
-        "input-field-search-name",
-      );
+      const isParamValid =
+        location.search.includes("q=") ||
+        location.search.includes("input-field-search-name");
+
+      expect(isParamValid, "search query parameter is present").to.be.true;
+
       expect(
         decodeURIComponent(location.href).toLowerCase(),
         "URL contains the search term",

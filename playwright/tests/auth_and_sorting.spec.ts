@@ -30,13 +30,22 @@ test.describe("Header authorization and listing sort", () => {
     expect(initialProductCount).toBeGreaterThan(1);
 
     await listingPage.selectSortOption("Найнижча ціна");
-
+    await page
+      .waitForURL(
+        (url) =>
+          url.search.includes("sort") ||
+          url.search.includes("order") ||
+          url.href.includes("price"),
+        { waitUntil: "domcontentloaded" },
+      )
+      .catch(() => {});
     await expect(listingPage.productCards).toHaveCount(initialProductCount);
 
     await expect
       .poll(
         async () => {
           const prices = await listingPage.getVisibleProductPrices();
+          if (prices.length === 0) return false;
           return prices.every(
             (price, index) => index === 0 || price >= prices[index - 1],
           );

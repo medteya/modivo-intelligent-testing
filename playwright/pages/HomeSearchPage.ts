@@ -45,7 +45,11 @@ export class HomeSearchPage {
     await this.searchInput.pressSequentially(query);
 
     await Promise.all([
-      this.page.waitForURL((url) => url.pathname.startsWith("/s/")),
+      this.page.waitForURL(
+        (url) =>
+          url.search.includes("input-field-search-name") ||
+          url.pathname.startsWith("/s/"),
+      ),
       this.searchInput.press("Enter"),
     ]);
   }
