@@ -16,7 +16,9 @@ describe("Search and category navigation", () => {
     home.searchFor(searchTerm);
 
     cy.location().should((location) => {
-      expect(location.pathname, "left the home page").not.to.eq("/");
+      expect(location.search, "search query parameter is present").to.contain(
+        "input-field-search-name",
+      );
       expect(
         decodeURIComponent(location.href).toLowerCase(),
         "URL contains the search term",
