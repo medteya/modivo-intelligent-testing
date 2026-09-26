@@ -20,6 +20,13 @@ test.describe("Header authorization and listing sort", () => {
   test("TC04: user can sort products by price ascending and the layout updates", async ({
     page,
   }) => {
+    // Confirmed via Playwright trace: a single price-read evaluation took
+    // 34.8s by itself on WebKit under CI, on this ~5,900-product catalog
+    // still actively settling (visible loading spinner on a card). The
+    // default 30s test-level budget doesn't leave enough room around that
+    // alongside the rest of the test's steps.
+    test.setTimeout(120_000);
+
     const listingPage = new ListingPage(page);
 
     await listingPage.open("/c/zhinky/vzuttya/snikersy");
@@ -54,7 +61,7 @@ test.describe("Header authorization and listing sort", () => {
         {
           message:
             "Expected product prices to be in ascending order after applying the price sort",
-          timeout: 30_000,
+          timeout: 60_000,
         },
       )
       .toBe(true);
