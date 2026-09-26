@@ -1,0 +1,21 @@
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
+
+# Cypress
+/cypress/screenshots/
+/cypress/videos/
+.cypress-cache/
+
+# Environment / OS
+.env
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
