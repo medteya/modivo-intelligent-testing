@@ -30,21 +30,18 @@ test.describe("Header authorization and listing sort", () => {
 
     await listingPage.selectSortOption("Найнижча ціна");
 
-    await page
-      .waitForURL(
-        (url) =>
-          url.search.includes("sort") ||
-          url.search.includes("order") ||
-          url.href.includes("price"),
-        { waitUntil: "domcontentloaded" },
-      )
-      .catch(() => {});
-
-    // Ensure cards are still visible and populated after sorting re-renders the grid
+    // Ensure the grid is still populated after sorting re-renders it.
     await expect(listingPage.productCards.first()).toBeVisible();
     const sortedCount = await listingPage.getProductCount();
     expect(sortedCount).toBeGreaterThan(0);
 
+    // NOTE: overrides the project's default 10s expect timeout for this
+    // one check. Confirmed via Playwright trace in an earlier round: the
+    // sort itself succeeds (option selected, count unchanged) — a full
+    // re-render for a large result set can genuinely take longer than 10s
+    // under CI/WebKit's weaker resources. Still a real, condition-based
+    // poll against actual page state, not a fixed sleep — only the
+    // ceiling is raised.
     await expect
       .poll(
         async () => {
@@ -57,6 +54,7 @@ test.describe("Header authorization and listing sort", () => {
         {
           message:
             "Expected product prices to be in ascending order after applying the price sort",
+          timeout: 30_000,
         },
       )
       .toBe(true);

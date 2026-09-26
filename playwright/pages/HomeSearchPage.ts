@@ -7,7 +7,9 @@ export class HomeSearchPage {
   private readonly cookieActions: Locator;
 
   constructor(private readonly page: Page) {
-    this.searchInput = page.getByRole("searchbox", { name: "Пошук товарів" });
+    this.searchInput = page
+      .getByRole("searchbox", { name: "Пошук товарів" })
+      .or(page.locator("input[name='q']"));
     this.cookieDialog = page.locator(".modal-consents");
     this.cookieActions = this.cookieDialog.locator(".buttons");
     this.cookieAcceptButton = page.getByTestId("customer-consents-button");
@@ -39,19 +41,36 @@ export class HomeSearchPage {
     await this.cookieDialog.waitFor({ state: "hidden" });
   }
 
-  async searchFor(term: string): Promise<void> {
-    const searchInput = this.page
-      .getByRole("searchbox", { name: /пошук/i })
-      .or(this.page.locator("input[name='q']"));
+  /**
+   * Submits a search query via the header search box.
+   *
+   * FIX (confirmed via DevTools + repeated trace evidence): typing opens a
+   * real autocomplete widget (`role="dialog"`, a suggestions list), not a
+   * plain text field. Submitting via a synthetic `Enter` keypress proved
+   * unreliable under automation — traces consistently showed the press
+   * complete in ~100ms with zero effect (no navigation), regardless of
+   * whether it was sent via the global keyboard API or scoped via
+   * `Locator.press()`. Rather than continuing to chase that widget's
+   * internal Enter-key handling, this clicks the real, visible "Показати
+   * всі результати" (show all results) button instead — a normal,
+   * deterministic UI click that Playwright can auto-wait on reliably,
+   * with no dependency on synthetic key-event semantics at all.
+   */
+  async searchFor(query: string): Promise<void> {
+    await this.searchInput.waitFor({ state: "visible" });
+    await this.searchInput.click();
+    await expect(this.searchInput).toBeFocused();
+    await this.searchInput.clear();
+    await this.searchInput.pressSequentially(query, { delay: 50 });
 
-    await searchInput.waitFor({ state: "visible" });
-    await searchInput.click();
-    await searchInput.clear();
-    await searchInput.pressSequentially(term, { delay: 50 });
+    const showAllResultsButton = this.page.getByRole("button", {
+      name: "Показати всі результати",
+    });
+    await showAllResultsButton.waitFor({ state: "visible" });
 
     await Promise.all([
-      this.page.waitForURL(/\/(s\/|.*q=)/),
-      searchInput.press("Enter"),
+      this.page.waitForURL((url) => url.pathname.startsWith("/s/")),
+      showAllResultsButton.click(),
     ]);
   }
 }
