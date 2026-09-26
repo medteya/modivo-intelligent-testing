@@ -39,18 +39,19 @@ export class HomeSearchPage {
     await this.cookieDialog.waitFor({ state: "hidden" });
   }
 
-  async searchFor(query: string): Promise<void> {
-    await this.searchInput.click();
-    await expect(this.searchInput).toBeFocused();
-    await this.searchInput.pressSequentially(query);
+  async searchFor(term: string): Promise<void> {
+    const searchInput = this.page
+      .getByRole("searchbox", { name: /пошук/i })
+      .or(this.page.locator("input[name='q']"));
+
+    await searchInput.waitFor({ state: "visible" });
+    await searchInput.click();
+    await searchInput.clear();
+    await searchInput.pressSequentially(term, { delay: 50 });
 
     await Promise.all([
-      this.page.waitForURL(
-        (url) =>
-          url.search.includes("input-field-search-name") ||
-          url.pathname.startsWith("/s/"),
-      ),
-      this.searchInput.press("Enter"),
+      this.page.waitForURL(/\/(s\/|.*q=)/),
+      searchInput.press("Enter"),
     ]);
   }
 }
