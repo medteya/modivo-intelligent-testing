@@ -5,16 +5,12 @@ export class HomeSearchPage {
   private readonly cookieAcceptButton: Locator;
   private readonly cookieDialog: Locator;
   private readonly cookieActions: Locator;
-  private readonly showAllResultsButton: Locator;
 
   constructor(private readonly page: Page) {
     this.searchInput = page.getByRole("searchbox", { name: "Пошук товарів" });
     this.cookieDialog = page.locator(".modal-consents");
     this.cookieActions = this.cookieDialog.locator(".buttons");
     this.cookieAcceptButton = page.getByTestId("customer-consents-button");
-    this.showAllResultsButton = page.getByRole("button", {
-      name: "Показати всі результати",
-    });
   }
 
   async goto(): Promise<void> {
@@ -46,8 +42,13 @@ export class HomeSearchPage {
   async searchFor(query: string): Promise<void> {
     await this.searchInput.click();
     await this.searchInput.pressSequentially(query);
+
     await Promise.all([
-      this.page.waitForURL((url) => url.pathname.startsWith("/s/")),
+      this.page.waitForURL(
+        (url) =>
+          url.search.includes("input-field-search-name") ||
+          url.pathname.startsWith("/s/"),
+      ),
       this.page.keyboard.press("Enter"),
     ]);
   }

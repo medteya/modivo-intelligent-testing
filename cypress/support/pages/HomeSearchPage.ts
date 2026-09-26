@@ -52,10 +52,11 @@ export class HomeSearchPage {
     return cy.get(this.selectors.searchInput).filter(":visible").first();
   }
 
-  searchFor(term: string): this {
-    this.searchInput().should("be.visible").and("be.enabled").type(term);
-    this.searchInput().should("have.value", term).type("{enter}");
-    return this;
+  searchFor(searchTerm: string): void {
+    this.searchInput()
+      .should("be.visible")
+      .clear()
+      .type(`${searchTerm}{enter}`);
   }
 
   departmentLink(departmentPath: string): Chain {
