@@ -46,7 +46,9 @@ export class HomeSearchPage {
   async searchFor(query: string): Promise<void> {
     await this.searchInput.click();
     await this.searchInput.pressSequentially(query);
-    await this.showAllResultsButton.click();
-    await this.page.waitForURL((url) => url.pathname.startsWith("/s/"));
+    await Promise.all([
+      this.page.waitForURL((url) => url.pathname.startsWith("/s/")),
+      this.page.keyboard.press("Enter"),
+    ]);
   }
 }

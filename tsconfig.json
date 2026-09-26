@@ -1,12 +1,14 @@
 {
   "compilerOptions": {
-    "target": "es2019",
-    "lib": ["es2019", "dom"],
-    "types": ["cypress", "node"],
-    "module": "commonjs",
-    "esModuleInterop": true,
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "types": ["node", "cypress"],
     "strict": true,
-    "skipLibCheck": true
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
   },
-  "include": ["cypress/**/*.ts"]
+  "include": ["cypress/**/*.ts", "playwright/**/*.ts", "*.ts"]
 }
