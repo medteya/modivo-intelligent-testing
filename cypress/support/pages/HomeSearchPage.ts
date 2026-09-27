@@ -57,7 +57,11 @@ export class HomeSearchPage {
   }
 
   searchFor(searchTerm: string): void {
-    this.searchInput().should("be.visible").clear().type(searchTerm);
+    this.searchInput()
+      .should("be.visible")
+      .clear()
+      .type(searchTerm, { delay: 100 })
+      .should("have.value", searchTerm);
 
     this.showAllResultsButton().should("be.visible").click();
   }
