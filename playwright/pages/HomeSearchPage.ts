@@ -41,22 +41,6 @@ export class HomeSearchPage {
     await this.cookieDialog.waitFor({ state: "hidden" });
   }
 
-  /**
-   * Submits a search query via the header search box.
-   *
-   * FIX (confirmed via trace, repeatedly): `.pressSequentially()` kept
-   * dropping the first character on WebKit ("Nike" → "ike") even with
-   * `toBeFocused()` confirmed first — this looks like a rendering-lag
-   * quirk specific to fast simulated per-keystroke typing on WebKit, not
-   * a focus-timing race. The SAME trace also proved my original reason
-   * for avoiding `.fill()` was wrong: the suggestions dropdown correctly
-   * showed "nike..." results even while the visible box lagged behind
-   * showing "ike" — meaning the site's reactive state responds correctly
-   * to `.fill()`'s atomic value set regardless. `.fill()` has no
-   * per-keystroke race to lose a character in, so it's used here for
-   * good. `.clear()` is redundant with `.fill()` (which replaces the
-   * value outright) and has been removed.
-   */
   async searchFor(query: string): Promise<void> {
     await this.searchInput.waitFor({ state: "visible" });
     await this.searchInput.click();

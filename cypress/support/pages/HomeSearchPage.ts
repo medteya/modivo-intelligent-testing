@@ -52,11 +52,14 @@ export class HomeSearchPage {
     return cy.get(this.selectors.searchInput).filter(":visible").first();
   }
 
+  showAllResultsButton(): Chain {
+    return cy.contains<HTMLElement>("Показати всі результати");
+  }
+
   searchFor(searchTerm: string): void {
-    this.searchInput()
-      .should("be.visible")
-      .clear()
-      .type(`${searchTerm}{enter}`);
+    this.searchInput().should("be.visible").clear().type(searchTerm);
+
+    this.showAllResultsButton().should("be.visible").click();
   }
 
   departmentLink(departmentPath: string): Chain {
